@@ -8,8 +8,8 @@ from blog import views
 def csrf_exempt(i): return i
 
 urlpatterns = [
-    path('signup', csrf_exempt(views.signup), name='signup'),
-    path('signin', csrf_exempt(views.signin), name='signin'),
-    path('signout', csrf_exempt(views.signout), name='signout'),
-    path('token', csrf_exempt(views.token), name='token'),
+    path('signup/', csrf_exempt(views.signup), name='signup'),
+    path('signin/', csrf_exempt(views.signin), name='signin'),
+    path('signout/', csrf_exempt(views.signout), name='signout'),
+    path('token/', csrf_exempt(views.token), name='token'),
 ]

@@ -11,5 +11,6 @@ urlpatterns = [
     path('signup/', csrf_exempt(views.signup), name='signup'),
     path('signin/', csrf_exempt(views.signin), name='signin'),
     path('signout/', csrf_exempt(views.signout), name='signout'),
+    path('article/', csrf_exempt(views.articles), name='articles'),
     path('token/', csrf_exempt(views.token), name='token'),
 ]

@@ -10,9 +10,12 @@ def signup(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
 
-    req_data = json.loads(request.body.decode())
-    username = req_data['username']
-    password = req_data['password']
+    try:
+        req_data = json.loads(request.body.decode())
+        username = req_data['username']
+        password = req_data['password']
+    except (ValueError, KeyError):
+        return HttpResponseBadRequest()
 
     try:
         User.objects.create_user(username=username, password=password)
@@ -26,9 +29,12 @@ def signin(request):
     if request.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
 
-    req_data = json.loads(request.body.decode())
-    username = req_data['username']
-    password = req_data['password']
+    try:
+        req_data = json.loads(request.body.decode())
+        username = req_data['username']
+        password = req_data['password']
+    except (ValueError, KeyError):
+        return HttpResponseBadRequest()
 
     user = authenticate(request, username=username, password=password)
     if user == None:
@@ -65,9 +71,12 @@ def articles(request):
 
     else: # request.method == 'POST':
         # new article
-        req_data = json.loads(request.body)
-        title = req_data['title']
-        content = req_data['content']
+        try:
+            req_data = json.loads(request.body)
+            title = req_data['title']
+            content = req_data['content']
+        except (ValueError, KeyError):
+            return HttpResponseBadRequest()
 
         new_article = Article(title=title, content=content, author=request.user)
         new_article.save()
@@ -107,9 +116,12 @@ def article(request, aid):
         if request.user != article.author:
             return HttpResponseForbidden()
 
-        req_data = json.loads(request.body)
-        title = req_data['title']
-        content = req_data['content']
+        try:
+            req_data = json.loads(request.body)
+            title = req_data['title']
+            content = req_data['content']
+        except (ValueError, KeyError):
+            return HttpResponseBadRequest()
 
         article.title = title
         article.content = content
@@ -155,8 +167,11 @@ def article_comment(request, aid):
 
     else: # request.method == 'POST':
         # new comment
-        req_data = json.loads(request.body)
-        content = req_data['content']
+        try:
+            req_data = json.loads(request.body)
+            content = req_data['content']
+        except (ValueError, KeyError):
+            return HttpResponseBadRequest()
 
         new_comment = Comment(article=article, content=content, author=request.user)
         new_comment.save()
@@ -196,8 +211,11 @@ def comments(request, cid):
         if request.user != comment.author:
             return HttpResponseForbidden()
 
-        req_data = json.loads(request.body)
-        content = req_data['content']
+        try:
+            req_data = json.loads(request.body)
+            content = req_data['content']
+        except (ValueError, KeyError):
+            return HttpResponseBadRequest()
 
         comment.content = content
         comment.save()

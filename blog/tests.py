@@ -29,8 +29,12 @@ class BlogTestCase(TestCase):
         client = Client()
 
         # not post
-        response = client.get('/api/signup/')
+        response = client.options('/api/signup/')
         self.assertEqual(response.status_code, 405)
+
+        # bad json
+        response = client.post('/api/signup/', {'invalid': 'payload'})
+        self.assertEqual(response.status_code, 400)
 
         # normal signup
         resposne = client.post('/api/signup/', {'username': 'user', 'password': 'pass'},
@@ -48,6 +52,10 @@ class BlogTestCase(TestCase):
         # not post
         response = client.options('/api/signin/')
         self.assertEqual(response.status_code, 405)
+
+        # bad json
+        response = client.post('/api/signin/', {'invalid': 'payload'})
+        self.assertEqual(response.status_code, 400)
 
         # test user
         response = client.post('/api/signup/', {'username': 'user', 'password': 'pass'},
@@ -108,6 +116,10 @@ class BlogTestCase(TestCase):
         # log in
         response = client.post('/api/signin/', {'username': 'user', 'password': 'pass'},
                 content_type='application/json')
+
+        # bad json
+        response = client.post('/api/article/', {'invalid': 'payload'})
+        self.assertEqual(response.status_code, 400)
 
         # create
         response = client.post('/api/article/', {'title': 'title', 'content': 'content'},
@@ -196,6 +208,10 @@ class BlogTestCase(TestCase):
         response = client.put(f'/api/article/{article1["id"]}/', {})
         self.assertEqual(response.status_code, 403)
 
+        # bad json
+        response = client.put(f'/api/article/{article2["id"]}/', {'invalid': 'payload'})
+        self.assertEqual(response.status_code, 400)
+
         # correct put
         response = client.put(f'/api/article/{article2["id"]}/', {'title': 'title2', 'content': 'content2'},
                 content_type='application/json')
@@ -221,7 +237,7 @@ class BlogTestCase(TestCase):
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0], article1)
 
-    def test_article_comment_get(self):
+    def test_article_comments(self):
         client = Client()
 
         # not get,post
@@ -249,6 +265,10 @@ class BlogTestCase(TestCase):
                 content_type='application/json')
         article = response.json()
 
+        # bad json
+        response = client.post(f'/api/article/{article["id"]}/comment/', {'invalid': 'payload'})
+        self.assertEqual(response.status_code, 400)
+
         # create
         response = client.post(f'/api/article/{article["id"]}/comment/', {'content': 'content'},
                 content_type='application/json')
@@ -266,7 +286,7 @@ class BlogTestCase(TestCase):
         self.assertEqual(len(response.json()), 1)
         self.assertEqual(response.json()[0], new_comment)
 
-    def test_comment_get(self):
+    def test_comments(self):
         client = Client()
 
         # not get, put, delete
@@ -299,12 +319,12 @@ class BlogTestCase(TestCase):
                 content_type='application/json')
         comment = response.json()
 
-        # retrieve article
+        # retrieve comments
         response = client.get(f'/api/comment/{comment["id"]}/')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), comment)
 
-    def test_comment_put_delete(self):
+    def test_comments_put_delete(self):
         client = Client()
 
         # create test user1
@@ -345,6 +365,10 @@ class BlogTestCase(TestCase):
         # not same user
         response = client.put(f'/api/comment/{comment1["id"]}/', {})
         self.assertEqual(response.status_code, 403)
+
+        # bad json
+        response = client.put(f'/api/comment/{comment2["id"]}/', {'invalid': 'payload'})
+        self.assertEqual(response.status_code, 400)
 
         # correct put
         response = client.put(f'/api/comment/{comment2["id"]}/', {'content': 'content2'},
